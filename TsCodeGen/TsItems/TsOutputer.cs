@@ -47,6 +47,8 @@ namespace TsCodeGen.TsItems
 
         public static string GetT4Type(ITypeSymbol typeSymbol)
         {
+            if (typeSymbol is ITypeParameterSymbol)
+                return typeSymbol.ToString();
             var typeWithNs = typeSymbol.ContainingNamespace + "." + typeSymbol.MetadataName;
             if (typeSymbol is IArrayTypeSymbol)
             {
@@ -71,7 +73,6 @@ namespace TsCodeGen.TsItems
                     if (mappings.ContainsKey(typeWithNs))
                     {
                          toReturn = mappings[typeWithNs];
-                        
                     }
                     else
                     {

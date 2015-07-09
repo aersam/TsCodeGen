@@ -31,16 +31,21 @@ namespace TsCodeGen
             {
                 var typeName = symbol.Type.Name.ToString();
                 var newTypeName = TsItems.TsOutputer.GetT4Type(symbol.Type);
-                
-                output.AppendLine("" + name + ": " + newTypeName +";");
+
+                output.AppendLine("" + name + ": " + newTypeName + ";");
             }
         }
-
         public override void VisitClassDeclaration(ClassDeclarationSyntax node)
         {
 
             var name = node.Identifier.ToString();
-            output.AppendLine("export interface " + name);
+            string typeArgs = "";
+            var firstChild = node.ChildNodes().FirstOrDefault();
+            if (firstChild is TypeParameterListSyntax)
+            {
+                typeArgs = ((TypeParameterListSyntax)firstChild).ToString();
+            }
+            output.AppendLine("export interface " + name + typeArgs);
             output.AppendLine("{");
             var symbol = model.GetDeclaredSymbol(node);
             base.VisitClassDeclaration(node);
