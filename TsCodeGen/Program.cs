@@ -11,30 +11,32 @@ namespace TsCodeGen
     {
         static void Main(string[] args)
         {
-            Task.WaitAll(new Program().DoWork());
+            new Program().DoWork();
         }
 
-        async Task DoWork()
+        void DoWork()
         {
             var workspace = MSBuildWorkspace.Create();
-            var project = await workspace.OpenProjectAsync(@"../../../ATestProject/ATestProject.csproj");
-            StringBuilder allOutput = new StringBuilder();
+            var project = workspace.OpenProjectAsync(@"../../../ATestProject/ATestProject.csproj").Result;
+            
 
 
-            var compUnit = await project.GetCompilationAsync();
-
-
+            var compUnit = project.GetCompilationAsync().Result;
+            var context = new Input.TsContext();
+            
+            var output = new TsItems.TsOutputer();
             foreach (var st in compUnit.SyntaxTrees)
             {
+                
                 var semanticModel = compUnit.GetSemanticModel(st);
                 var root = st.GetRoot();
-                var tsw = new TSWalker(compUnit, semanticModel, allOutput);
+                var tsw = new TSWalker(output, context, semanticModel);
                 tsw.Visit(root);
                 Console.WriteLine(st.FilePath);
             }
 
 
-            System.IO.File.WriteAllText("output.d.ts", allOutput.ToString(), Encoding.UTF8);
+            System.IO.File.WriteAllText("output.ts", output.GetContent(), Encoding.UTF8);
         }
     }
 }

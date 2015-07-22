@@ -18,7 +18,7 @@ namespace ATestProject
             get; set;
         }
 
-        public IEnumerable<AClass> AnIEnumerable
+        public IEnumerable<GenericTestClass<TestEnum, string>> AnIEnumerable
         {
             get; set;
         }
